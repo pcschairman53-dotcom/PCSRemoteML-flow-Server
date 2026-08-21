@@ -4,16 +4,20 @@ import subprocess
 import sys
 
 
-# Render Free filesystem: use writable temporary storage
+# Render Free: writable temporary storage
 DATA_DIR = Path(
     os.getenv("MLFLOW_DATA_DIR", "/tmp/mlflow")
 )
 
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
-DB_PATH = DATA_DIR / "mlflow.db"
-ARTIFACT_DIR = DATA_DIR / "artifacts"
 
+# MLflow database
+DB_PATH = DATA_DIR / "mlflow.db"
+
+
+# Local artifact directory
+ARTIFACT_DIR = DATA_DIR / "artifacts"
 ARTIFACT_DIR.mkdir(parents=True, exist_ok=True)
 
 
@@ -26,21 +30,28 @@ PORT = os.getenv("PORT", "10000")
 BACKEND_STORE_URI = f"sqlite:///{DB_PATH}"
 
 
-# Start MLflow server
+# Start lightweight MLflow server
 cmd = [
     sys.executable,
     "-m",
     "mlflow",
     "server",
+
     "--host",
     HOST,
+
     "--port",
     PORT,
+
     "--workers",
     "1",
+
     "--backend-store-uri",
     BACKEND_STORE_URI,
-    "--artifacts-destination",
+
+    "--no-serve-artifacts",
+
+    "--default-artifact-root",
     f"file://{ARTIFACT_DIR}",
 ]
 
@@ -51,6 +62,7 @@ print(f"Artifacts: {ARTIFACT_DIR}")
 print(f"Host: {HOST}")
 print(f"Port: {PORT}")
 print("Workers: 1")
+print("Artifact proxy: disabled")
 
 
 subprocess.run(cmd, check=True)
