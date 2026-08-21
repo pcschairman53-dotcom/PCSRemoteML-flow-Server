@@ -5,7 +5,7 @@ import sys
 
 
 DATA_DIR = Path(
-    os.getenv("MLFLOW_DATA_DIR", "/var/data/mlflow")
+    os.getenv("MLFLOW_DATA_DIR", "/tmp/mlflow")
 )
 
 DATA_DIR.mkdir(parents=True, exist_ok=True)
